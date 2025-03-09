@@ -1,34 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiplayer Zetamac</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        #button {
-            width: 6em;
-            border: 2px solid green;
-            background: #ffe;
-            border-radius: 5px;
-        }
-        a {
-            display: block;
-            width: 100%;
-            line-height: 2em;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        a:hover {
-            color: red;
-            background: #eff;
-        }
-    </style>
-    
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Title</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #1e1e1e;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      color: white;
+      flex-direction: column;
+    }
+
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    .play-button {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .play-button:hover {
+      background-color: #e53935;
+    }
+
+    .play-button:focus {
+      outline: none;
+    }
+
+    .game-container {
+      display: none;
+      text-align: center;
+    }
+
+    .game-container h2 {
+      font-size: 2rem;
+      color: white;
+    }
+  </style>
 </head>
 <body>
-    <div id="button"><a href="game.html">Log In</a></div>
-    <h1>Multiplayer Zetamac</h1>
+
+  <!-- Title Screen -->
+  <div class="title-screen">
+    <h1>My Awesome Game</h1>
+    <button class="play-button" id="playButton"><a href="game.html">Play</a></button>
+  </div>
+
 </body>
 </html>
