@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Zetamac</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #scoreboard { margin-bottom: 20px; }
+        #chat { width: 300px; height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 5px; }
+        #answerBox { width: 100%; }
+    </style>
+</head>
+<body>
+    <h1>Multiplayer Zetamac</h1>
+    <div id="scoreboard">
+        <p>Player 1: <span id="player1Score">0</span></p>
+        <p>Player 2: <span id="player2Score">0</span></p>
+    </div>
+    <div id="chat"></div>
+    <input type="text" id="answerBox" placeholder="Type your answer..." autofocus>
+    <button id="submitAnswer">Submit Answer</button>
+    <p id="question"></p>
 
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Display initial messages from the server
+        socket.on('message', (msg) => {
+            const chat = document.getElementById('chat');
+            chat.innerHTML += `<p>${msg}</p>`;
+        });
+
+        // Display the new question when it's sent from the server
+        socket.on('newQuestion', (question) => {
+            document.getElementById('question').innerText = `Solve: ${question}`;
+        });
+
+        // Update the scores when they are changed
+        socket.on('scoreUpdate', (scores) => {
+            document.getElementById('player1Score').innerText = scores[0];
+            document.getElementById('player2Score').innerText = scores[1];
+        });
+
+        // Show the winner and reset the game when the game ends
+        socket.on('endGame', (message) => {
+            alert(message);
+            socket.emit('newGame'); // Request a new game after one ends
+        });
+
+        // Handle the submission of an answer
+        document.getElementById('submitAnswer').addEventListener('click', () => {
+            const answer = document.getElementById('answerBox').value;
+            if (answer !== "") {
+                socket.emit('answer', answer);  // Send the answer to the server
+                document.getElementById('answerBox').value = '';  // Clear the answer box
+            }
+        });
+
+        // Optionally, allow pressing "Enter" to submit the answer
+        document.getElementById('answerBox').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('submitAnswer').click();
+            }
+        });
+    </script>
+</body>
+</html>
