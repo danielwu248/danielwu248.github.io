@@ -1,27 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiplayer Zetamac</title>
     <style>
-        body { font-family: Arial, sans-serif; }
+        h1 { font-family: 'Trebuchet MS', sans-serif; text-align: center; font-size: 40px;}
+        body { font-family: Georgia, serif; text-align: center; font-size: 30px;}
         #scoreboard { margin-bottom: 20px; }
-        #chat { width: 300px; height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 5px; }
-        #answerBox { width: 100%; }
+        #answerBox { width: 70%; }
+        .square {
+          margin: auto;
+          padding-top: 20px;
+          height: 500px;
+          width: 500px;
+          background-color: #E5E4E2;
+          border-radius: 10px;
+          box-shadow: 0px 0px 22px 1px gray;
+        }
     </style>
 </head>
 <body>
-    <h1>Multiplayer Zetamac</h1>
-    <div id="scoreboard">
-        <p>Player 1: <span id="player1Score">0</span></p>
-        <p>Player 2: <span id="player2Score">0</span></p>
+    <div class="square">
+        <h1>Multiplayer Zetamac</h1>
+        <div id="scoreboard">
+            <p>Score: <span id="player1Score">0</span></p>
+        </div>
+        <input type="text" id="answerBox" placeholder="Type your answer..." autofocus="">
+        <button id="submitAnswer">Submit Answer</button>
+        <p id="question"></p>
     </div>
-    <div id="chat"></div>
-    <input type="text" id="answerBox" placeholder="Type your answer..." autofocus>
-    <button id="submitAnswer">Submit Answer</button>
-    <p id="question"></p>
-
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
@@ -65,5 +70,6 @@
             }
         });
     </script>
-</body>
-</html>
+
+
+</body></html>
