@@ -6,10 +6,12 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+// Serve the game page
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
+// Function to generate random arithmetic questions
 function generateQuestion() {
     const operators = ['+', '-', '*', '/'];
     const operator = operators[Math.floor(Math.random() * operators.length)];
@@ -18,19 +20,23 @@ function generateQuestion() {
     let question = `${num1} ${operator} ${num2}`;
     let answer;
 
-    switch (operator) {
-        case '+':
-            answer = num1 + num2;
-            break;
-        case '-':
-            answer = num1 - num2;
-            break;
-        case '*':
-            answer = num1 * num2;
-            break;
-        case '/':
-            answer = (num1 / num2).toFixed(2);  // division to 2 decimal points
-            break;
+    if (operator === '/') {
+        if (num1 % num2 !== 0) {
+            return generateQuestion(); 
+        }
+        answer = num1 / num2;
+    } else {
+        switch (operator) {
+            case '+':
+                answer = num1 + num2;
+                break;
+            case '-':
+                answer = num1 - num2;
+                break;
+            case '*':
+                answer = num1 * num2;
+                break;
+        }
     }
 
     return { question, answer };
@@ -40,18 +46,15 @@ let players = [];
 let scores = [0, 0];
 
 io.on('connection', (socket) => {
-    // Add player to the game
     if (players.length < 2) {
         players.push(socket);
         socket.emit('message', 'Waiting for another player to join...');
     }
 
     if (players.length === 2) {
-        // Send the first question to both players
         const { question, answer } = generateQuestion();
         io.emit('newQuestion', question);
 
-        // Listen for players' answers
         socket.on('answer', (msg) => {
             if (parseFloat(msg) === answer) {
                 if (players.indexOf(socket) === 0) {
@@ -73,4 +76,3 @@ io.on('connection', (socket) => {
 server.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');
 });
-
