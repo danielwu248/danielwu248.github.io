@@ -30,7 +30,9 @@
     <script src="/socket.io/server.js"></script>
     <script>
         const socket = io();
-
+        socket.on("hello", (arg) => {
+          console.log(arg); // world
+        });
         // Display initial messages from the server
         socket.on('message', (msg) => {
             const chat = document.getElementById('chat');
