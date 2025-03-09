@@ -8,7 +8,7 @@ const io = socketIo(server);
 
 // Serve the game page
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/game.html');
 });
 
 // Function to generate random arithmetic questions
