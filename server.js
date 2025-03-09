@@ -1,14 +1,15 @@
 const express = require('express');
 const http = require('http');
-const socketIo = require('socket.io');
+const { Server } = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = new Server(server);
 
-// Serve the game page
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/game.html');
+app.use(express.static(__dirname + '/public'));
+
+app.get('/socket.io/socket.io.js', (req, res) => {
+    res.sendFile(__dirname + '/node_modules/socket.io/client-dist/socket.io.js');
 });
 
 // Function to generate random arithmetic questions
@@ -56,15 +57,14 @@ let players = [];
 let scores = [0, 0];
 
 io.on('connection', (socket) => {
-    io.on("connection", (socket) => {
-      socket.emit("hello", "world");
-    });
-    if (players.length < 2) {
-        players.push(socket);
-        socket.emit('message', 'Waiting for another player to join...');
-    }
+    console.log("A user connected");
+    socket.emit("hello", "world");
+    // if (players.length < 2) {
+    //     players.push(socket);
+    //     socket.emit('message', 'Waiting for another player to join...');
+    // }
 
-    if (players.length === 2) {
+    if (true) {
         const { question, answer } = generateQuestion();
         io.emit('newQuestion', question);
 
@@ -95,6 +95,7 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 });
