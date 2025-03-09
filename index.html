@@ -1,25 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>My test page</title>
-    <link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
-    <link href="styles/style.css" rel="stylesheet" type="text/css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Zetamac</title>
     <style>
-    h1 {text-align: center; font-family:'Courier New'}
-    p {text-align: center; font-family:'Courier New'}
-    div {text-align: center; font-family:'Courier New'}
-    .center {
-      margin: auto;
-      width: 60%;
-      border: 3px solid #73AD21;
-      padding: 10px;
-    }
-</style>
+        body { font-family: Arial, sans-serif; }
+        #scoreboard { margin-bottom: 20px; }
+        #chat { width: 300px; height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 5px; }
+        #answerBox { width: 100%; }
     </style>
-  </head>
-  <div class="center">
-    <p>At Mozilla, we’re a global community of working together to keep the Internet alive and accessible, so people worldwide can be informed contributors and creators of the Web. We believe this act of human collaboration across an open platform is essential to individual growth and our collective future.</p>
-    <p>Read the <a href="https://www.mozilla.org/en-US/about/manifesto/">Mozilla Manifesto</a> to learn even more about the values and principles that guide the pursuit of our mission.</p>
-  </div>
+</head>
+<body>
+    <h1>Multiplayer Zetamac</h1>
+    <div id="scoreboard">
+        <p>Player 1: <span id="player1Score">0</span></p>
+        <p>Player 2: <span id="player2Score">0</span></p>
+    </div>
+    <div id="chat"></div>
+    <input type="text" id="answerBox" placeholder="Type your answer..." autofocus>
+    <button id="submitAnswer">Submit Answer</button>
+    <p id="question"></p>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('message', (msg) => {
+            const chat = document.getElementById('chat');
+            chat.innerHTML += `<p>${msg}</p>`;
+        });
+
+        socket.on('newQuestion', (question) => {
+            document.getElementById('question').innerText = `Solve: ${question}`;
+        });
+
+        socket.on('scoreUpdate', (scores) => {
+            document.getElementById('player1Score').innerText = scores[0];
+            document.getElementById('player2Score').innerText = scores[1];
+        });
+
+        socket.on('endGame', (message) => {
+            alert(message);
+            socket.emit('newGame');
+        });
+
+        document.getElementById('submitAnswer').addEventListener('click', () => {
+            const answer = document.getElementById('answerBox').value;
+            socket.emit('answer', answer);
+            document.getElementById('answerBox').value = '';
+        });
+    </script>
+</body>
 </html>
