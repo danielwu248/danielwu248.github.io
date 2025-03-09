@@ -15,26 +15,36 @@ app.get('/', (req, res) => {
 function generateQuestion() {
     const operators = ['+', '-', '*', '/'];
     const operator = operators[Math.floor(Math.random() * operators.length)];
-    const num1 = Math.floor(Math.random() * 20) + 1;
-    const num2 = Math.floor(Math.random() * 20) + 1;
-    let question = `${num1} ${operator} ${num2}`;
-    let answer;
+    let num1, num2, question, answer;
 
     if (operator === '/') {
-        if (num1 % num2 !== 0) {
-            return generateQuestion(); 
+        // Division: Only numbers between 10 and 800, and they must be divisible
+        while (true) {
+            num1 = Math.floor(Math.random() * (800 - 10 + 1)) + 10;
+            num2 = Math.floor(Math.random() * (800 - 10 + 1)) + 10;
+            if (num1 % num2 === 0) {
+                answer = num1 / num2;
+                question = `${num1} ÷ ${num2}`;
+                break;
+            }
         }
-        answer = num1 / num2;
     } else {
+        // Addition, subtraction, and multiplication: Numbers between 1 and 50
+        num1 = Math.floor(Math.random() * 50) + 1;
+        num2 = Math.floor(Math.random() * 50) + 1;
+
         switch (operator) {
             case '+':
                 answer = num1 + num2;
+                question = `${num1} + ${num2}`;
                 break;
             case '-':
                 answer = num1 - num2;
+                question = `${num1} - ${num2}`;
                 break;
             case '*':
                 answer = num1 * num2;
+                question = `${num1} × ${num2}`;
                 break;
         }
     }
@@ -57,20 +67,29 @@ io.on('connection', (socket) => {
 
         socket.on('answer', (msg) => {
             if (parseFloat(msg) === answer) {
-                if (players.indexOf(socket) === 0) {
-                    scores[0]++;
-                } else {
-                    scores[1]++;
-                }
+                const playerIndex = players.indexOf(socket);
+                scores[playerIndex]++;
                 io.emit('scoreUpdate', scores);
-                if (scores[0] >= 10 || scores[1] >= 10) {
-                    io.emit('endGame', `Player ${scores[0] >= 10 ? 1 : 2} wins!`);
+
+                if (scores[playerIndex] >= 10) {
+                    io.emit('endGame', `Player ${playerIndex + 1} wins!`);
                     scores = [0, 0]; // Reset scores
                     io.emit('scoreUpdate', scores);
+                } else {
+                    // Generate new question after a correct answer
+                    const newQuestion = generateQuestion();
+                    io.emit('newQuestion', newQuestion.question);
                 }
             }
         });
     }
+
+    socket.on('disconnect', () => {
+        players = players.filter(p => p !== socket);
+        if (players.length < 2) {
+            io.emit('message', 'Waiting for another player to join...');
+        }
+    });
 });
 
 server.listen(3000, () => {
