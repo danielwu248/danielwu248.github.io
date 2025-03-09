@@ -56,6 +56,9 @@ let players = [];
 let scores = [0, 0];
 
 io.on('connection', (socket) => {
+    io.on("connection", (socket) => {
+      socket.emit("hello", "world");
+    });
     if (players.length < 2) {
         players.push(socket);
         socket.emit('message', 'Waiting for another player to join...');
